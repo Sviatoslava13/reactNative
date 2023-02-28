@@ -16,7 +16,7 @@ const initialState = {
   email: "",
   password: "",
 };
-const LoginScreen = () => {
+const LoginScreen = ({navigation}) => {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
@@ -43,7 +43,7 @@ const LoginScreen = () => {
             <View
               style={{
                 ...styles.form,
-                marginBottom: isShowKeyboard ? 200 : 0,
+                marginBottom: isShowKeyboard ? 250 : 144,
               }}
             >
               <KeyboardAvoidingView
@@ -86,7 +86,7 @@ const LoginScreen = () => {
               >
                 <Text style={styles.btnTitle}>Войти</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity   onPress={() => navigation.navigate("Registration")}>
                 <Text style={styles.link}>
                   Нет аккаунта? Зарегистрироваться
                 </Text>
@@ -149,6 +149,6 @@ const styles = StyleSheet.create({
   link: {
     color: "#1B4371",
     textAlign: "center",
-    fontFamily: "Roboto-Regular-400",
+    fontFamily: "Roboto-Regular-400"
   },
 });

@@ -16,7 +16,7 @@ const initialState = {
   email: "",
   password: "",
 };
-const RegistrationScreen = () => {
+const RegistrationScreen = ({navigation}) => {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
@@ -45,10 +45,10 @@ const RegistrationScreen = () => {
               activeOpacity={0.8}
             ></TouchableOpacity>
             <View
-              style={{ ...styles.form, marginBottom: isShowKeyboard ? 100 : 0 }}
+              style={{ ...styles.form, marginBottom: isShowKeyboard ? 200 : 78}}
             >
               <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : null}
+                behavior={Platform.OS === "ios" ? "padding" : 'height'}
               >
                 <View style={styles.header}>
                   <Text style={styles.headerTitle}>Регистрация</Text>
@@ -94,7 +94,7 @@ const RegistrationScreen = () => {
               <TouchableOpacity style={styles.button} onPress={handleSabmit}>
                 <Text style={styles.btnTitle}>Зарегистрироваться</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                 <Text style={styles.link}>Уже есть аккаунт? Войти</Text>
               </TouchableOpacity>
             </View>
@@ -167,6 +167,6 @@ const styles = StyleSheet.create({
   link: {
     color: "#1B4371",
     textAlign: "center",
-    fontFamily: "Roboto-Regular-400",
+   fontFamily: "Roboto-Regular-400",
   },
 });
