@@ -8,29 +8,103 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-const CreatePostsScreen = () => {
+import { useEffect, useState } from "react";
+
+const initialState = {
+  photo: "",
+  titlePicture: "",
+  location: "",
+};
+
+const CreatePostsScreen = ({ navigation, route }) => {
+  const [photo, setPhoto] = useState("");
+  const [form, setForm] = useState(initialState);
+  const [location, setLocation] = useState(null);
+  const handleSubmit = () => {
+    console.log(form);
+    navigation.navigate("Posts", { form });
+    setForm(initialState);
+    setPhoto(null);
+  };
+  useEffect(() => {
+    if (!route.params) {
+      return;
+    }
+    if (route.params.location) {
+      setLocation(route.params.location);
+      setForm((prevState) => ({
+        ...prevState,
+        location: route.params.location,
+      }));
+    }
+    setPhoto(route.params.photo);
+    setForm((prevState) => ({ ...prevState, photo: route.params.photo }));
+  }, [route.params]);
   return (
     <View style={styles.container}>
       <View style={styles.form}>
-        <View style={styles.box}>
-          <TouchableOpacity style={styles.boxContainer}>
-            <FontAwesome name="camera" size={24} color="#BDBDBD" />
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity>
-          <Text style={styles.textUnderPhoto}>Загрузите фото</Text>
+        {!photo ? (
+          <View style={styles.box}>
+            <TouchableOpacity
+              style={styles.boxContainer}
+              onPress={() => {
+                navigation.navigate("Camera");
+              }}
+            >
+              <FontAwesome name="camera" size={24} color="#BDBDBD" />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View>
+            <Image style={styles.img} source={{ uri: photo }} />
+          </View>
+        )}
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Camera");
+          }}
+        >
+          <Text style={styles.textUnderPhoto}>
+            {" "}
+            {photo ? "Редактировать фото" : "Загрузите фото"}
+          </Text>
         </TouchableOpacity>
-        <TextInput style={styles.input} placeholder="Название..." />
-        <TouchableOpacity style={styles.input} activeOpacity={0.9}>
+        <TextInput
+          style={styles.input}
+          placeholder="Название..."
+          onChangeText={(value) =>
+            setForm((prevState) => ({
+              ...prevState,
+              titlePicture: value,
+            }))
+          }
+          value={form.titlePicture}
+        />
+        <TouchableOpacity
+          style={styles.input}
+          activeOpacity={0.9}
+          onPress={() => {
+            navigation.navigate("Map", { location });
+          }}
+        >
           <Feather name="map-pin" size={24} color="#BDBDBD" />
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.7} style={styles.button}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.button}
+          onPress={handleSubmit}
+        >
           <Text style={styles.btnText}>Опубликовать</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.bottomBox}>
-        <TouchableOpacity style={styles.deleteBtn}>
+        <TouchableOpacity
+          style={styles.deleteBtn}
+          onPress={() => {
+            setForm(initialState);
+            setPhoto(null);
+          }}
+        >
           <Feather name="trash-2" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
@@ -104,7 +178,7 @@ const styles = StyleSheet.create({
     height: 51,
     marginTop: 16,
     justifyContent: "center",
-      alignItems: "center",
+    alignItems: "center",
     color: "white",
   },
   btnTitle: {
@@ -124,8 +198,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 20,
     backgroundColor: "#F6F6F6",
-    },
-    btnText: {
-        color: 'white'
-  }
+  },
+  btnText: {
+    color: "white",
+  },
 });
