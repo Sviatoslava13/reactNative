@@ -1,3 +1,5 @@
+import React, { useEffect } from "react";
+import { useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -8,7 +10,6 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
 
 const initialState = {
   photo: "",
@@ -20,12 +21,21 @@ const CreatePostsScreen = ({ navigation, route }) => {
   const [photo, setPhoto] = useState("");
   const [form, setForm] = useState(initialState);
   const [location, setLocation] = useState(null);
-  const handleSubmit = () => {
+  const [disabledBtn, setDisabledBtn] = useState(true);
+
+  const submitForm = () => {
+    navigation.navigate('Posts', {form})
     console.log(form);
-    navigation.navigate("Posts", { form });
     setForm(initialState);
     setPhoto(null);
   };
+
+  useEffect(() => {
+    if (form.titlePicture && form.photo) {
+      setDisabledBtn(false);
+    }
+  }, [form]);
+
   useEffect(() => {
     if (!route.params) {
       return;
@@ -40,6 +50,7 @@ const CreatePostsScreen = ({ navigation, route }) => {
     setPhoto(route.params.photo);
     setForm((prevState) => ({ ...prevState, photo: route.params.photo }));
   }, [route.params]);
+
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -59,13 +70,13 @@ const CreatePostsScreen = ({ navigation, route }) => {
             <Image style={styles.img} source={{ uri: photo }} />
           </View>
         )}
+
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("Camera");
           }}
         >
           <Text style={styles.textUnderPhoto}>
-            {" "}
             {photo ? "Редактировать фото" : "Загрузите фото"}
           </Text>
         </TouchableOpacity>
@@ -91,10 +102,20 @@ const CreatePostsScreen = ({ navigation, route }) => {
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.7}
-          style={styles.button}
-          onPress={handleSubmit}
+          style={{
+            ...styles.button,
+            backgroundColor: disabledBtn ? "#F6F6F6" : "#FF6C00",
+          }}
+          onPress={submitForm}
         >
-          <Text style={styles.btnText}>Опубликовать</Text>
+          <Text
+            style={{
+              ...styles.btnTitle,
+              color: disabledBtn ? "#BDBDBD" : "#FFFFFF",
+            }}
+          >
+            Опубликовать
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.bottomBox}>
@@ -111,7 +132,9 @@ const CreatePostsScreen = ({ navigation, route }) => {
     </View>
   );
 };
+
 export default CreatePostsScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -162,7 +185,7 @@ const styles = StyleSheet.create({
     color: "#BDBDBD",
     fontSize: 16,
     fontFamily: "Roboto-Regular-400",
-    marginBottom: 32,
+    marginBottom:8,
   },
   input: {
     height: 50,
@@ -176,10 +199,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF6C00",
     borderRadius: 100,
     height: 51,
-    marginTop: 16,
+    marginTop:16,
     justifyContent: "center",
     alignItems: "center",
-    color: "white",
   },
   btnTitle: {
     color: "white",
@@ -198,8 +220,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 20,
     backgroundColor: "#F6F6F6",
-  },
-  btnText: {
-    color: "white",
   },
 });

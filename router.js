@@ -1,52 +1,62 @@
 import React from "react";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RegistrationScreen from "./Screens/RegistrationScreen";
-import LoginScreen from "./Screens/LoginScreen";
-import Home from "./Screens/Main/Home";
-import CreatePostsScreen from "./Screens/Main/CreatePostsScreen";
-import CommentsScreen from "./Screens/Main/CommentsScreen";
-import MapScreen from "./Screens/Main/MapScreen";
-import Camera from './Screens/Main/Camera'
-const Stack = createNativeStackNavigator();
+
+import { createStackNavigator } from "@react-navigation/stack";
+
+import CreatePostsScreen from "./Screens/Main/CreatePostsScreen/CreatePostsScreen";
+import LoginScreen from "./Screens/Auth/LoginScreen/LoginScreen";
+import RegistrationScreen from "./Screens/Auth/RegistrationScreen/RegistrationScreen";
+import Home from "./Screens/Main/Home/Home";
+import CommentsScreen from "./Screens/Main/CommentsScreen/CommentsScreen";
+import CameraScreen from "./Screens/Main/Camera/Camera";
+import MapScreen from "./Screens/Main/MapScreen/MapScreen";
+const AuthStack = createStackNavigator();
 export const useRoute = (isAuth) => {
   if (!isAuth) {
     return (
-      <Stack.Navigator>
-        <Stack.Screen
+      <AuthStack.Navigator>
+        <AuthStack.Screen
           options={{ headerShown: false }}
           name="Login"
           component={LoginScreen}
         />
-        <Stack.Screen
+        <AuthStack.Screen
           options={{ headerShown: false }}
           name="Registration"
           component={RegistrationScreen}
         />
-      </Stack.Navigator>
+      </AuthStack.Navigator>
     );
   }
   return (
-    <Stack.Navigator
+    <AuthStack.Navigator
       screenOptions={{
         headerBackTitleVisible: false,
       }}
     >
-      <Stack.Screen
-        options={{ headerShown: false }}
+      <AuthStack.Screen
         name="Home"
+        options={{
+          headerShown: false,
+        }}
         component={Home}
       />
-      <Stack.Screen
-        options={{ headerTitleAlign: "center" }}
+      <AuthStack.Screen
         name="CreatePosts"
         component={CreatePostsScreen}
+        options={{
+          headerTitleAlign: "center",
+        }}
       />
-      <Stack.Screen name="Comments" component={CommentsScreen} />
-      <Stack.Screen name="Map" component={MapScreen} />
-         <Stack.Screen name="Camera" component={Camera} options={{
+      <AuthStack.Screen
+        name="Camera"
+        component={CameraScreen}
+        options={{
           headerShown: false,
           gestureDirection: "vertical",
-        }} />
-    </Stack.Navigator>
+        }}
+      />
+      <AuthStack.Screen name="Comments" component={CommentsScreen} />
+      <AuthStack.Screen name="Map" component={MapScreen} />
+    </AuthStack.Navigator>
   );
 };

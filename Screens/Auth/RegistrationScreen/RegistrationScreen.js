@@ -1,34 +1,41 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
-  ImageBackground,
-  KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
   Platform,
   Keyboard,
+  TouchableWithoutFeedback,
+  ImageBackground,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSingUpUser } from "../../../redux/auth/authOperations";
 
 const initialState = {
+  name: "",
   email: "",
   password: "",
 };
-const LoginScreen = ({navigation}) => {
-  const [state, setState] = useState(initialState);
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
-  const handleSabmit = () => {
-    setIsShowKeyboard(false);
+const RegistrationScreen = ({ navigation }) => {
+  const [state, setState] = useState(initialState);
+
+  const dispatch = useDispatch();
+
+  const [activeKayboard, setActiveKayboard] = useState(false);
+  const submitValue = () => {
+    setActiveKayboard(false);
     Keyboard.dismiss();
     console.log(state);
+    dispatch(authSingUpUser(state));
     setState(initialState);
   };
 
   const onActive = () => {
-    setIsShowKeyboard(false);
+    setActiveKayboard(false);
     Keyboard.dismiss();
   };
 
@@ -36,27 +43,40 @@ const LoginScreen = ({navigation}) => {
     <TouchableWithoutFeedback onPress={onActive}>
       <ImageBackground
         style={styles.image}
-        source={require("../assets/image/photo-bg.png")}
+        source={require("../../../assets/image/photo-bg.png")}
       >
         <TouchableWithoutFeedback onPress={onActive}>
           <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.userPhoto}
+              activeOpacity={0.8}
+            ></TouchableOpacity>
             <View
-              style={{
-                ...styles.form,
-                marginBottom: isShowKeyboard ? 250 : 144,
-              }}
+              style={{ ...styles.form, marginBottom: activeKayboard ? 230 : 66 }}
             >
               <KeyboardAvoidingView
-                behavior={Platform.OS !== "ios" ? "padding" : null}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                keyboardVerticalOffset={-350}
               >
                 <View style={styles.header}>
-                  <Text style={styles.headerTitle}>Войти</Text>
+                  <Text style={styles.headerTitle}>Регистрация</Text>
+                </View>
+                <View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Логин"
+                    onFocus={() => setActiveKayboard(true)}
+                    value={state.name}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({ ...prevState, name: value }))
+                    }
+                  />
                 </View>
                 <View>
                   <TextInput
                     style={styles.input}
                     placeholder="Адрес электронной почты"
-                    onFocus={() => setIsShowKeyboard(true)}
+                    onFocus={() => setActiveKayboard(true)}
                     value={state.email}
                     onChangeText={(value) =>
                       setState((prevState) => ({ ...prevState, email: value }))
@@ -68,7 +88,7 @@ const LoginScreen = ({navigation}) => {
                     style={styles.input}
                     placeholder="Пароль"
                     secureTextEntry={true}
-                    onFocus={() => setIsShowKeyboard(true)}
+                    onFocus={() => setActiveKayboard(true)}
                     value={state.password}
                     onChangeText={(value) =>
                       setState((prevState) => ({
@@ -82,14 +102,12 @@ const LoginScreen = ({navigation}) => {
               <TouchableOpacity
                 activeOpacity={0.7}
                 style={styles.button}
-                onPress={handleSabmit}
+                onPress={submitValue}
               >
-                <Text style={styles.btnTitle}>Войти</Text>
+                <Text style={styles.btnTitle}>Зарегистрироваться</Text>
               </TouchableOpacity>
-              <TouchableOpacity   onPress={() => navigation.navigate("Registration")}>
-                <Text style={styles.link}>
-                  Нет аккаунта? Зарегистрироваться
-                </Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                <Text style={styles.link}>Уже есть аккаунт? Войти</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -98,7 +116,9 @@ const LoginScreen = ({navigation}) => {
     </TouchableWithoutFeedback>
   );
 };
-export default LoginScreen;
+
+export default RegistrationScreen;
+
 const styles = StyleSheet.create({
   image: {
     flex: 1,
@@ -106,17 +126,31 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   container: {
+    position: "relative",
     backgroundColor: "white",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+    // opacity: 0.8,
+  },
+  userPhoto: {
+    position: "absolute",
+    top: -60,
+    right: "50%",
+    transform: [{ translateX: 60 }],
+    maxWidth: 120,
+    minWidth: 120,
+    height: 120,
+    borderRadius: 30,
+    backgroundColor: "#F6F6F6",
   },
   form: {
     marginHorizontal: 16,
     justifyContent: "flex-end",
+    // marginBottom: 78,
   },
   header: {
     alignItems: "center",
-    marginTop: 32,
+    marginTop: 92,
   },
   headerTitle: {
     fontSize: 33,
@@ -149,6 +183,6 @@ const styles = StyleSheet.create({
   link: {
     color: "#1B4371",
     textAlign: "center",
-    fontFamily: "Roboto-Regular-400"
+    fontFamily: "Roboto-Regular-400",
   },
 });

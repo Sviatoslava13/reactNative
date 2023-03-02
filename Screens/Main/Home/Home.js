@@ -1,12 +1,33 @@
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import PostsScreen from './PostsScreen';
-import CreatePostsScreen from './CreatePostsScreen';
-import ProfileScreen from './ProfileScreen';
+import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { StyleSheet, TouchableOpacity } from "react-native";
+
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import PostsScreen from "../PostsScreen/PostsScreen";
+import CreatePostsScreen from "../CreatePostsScreen/CreatePostsScreen";
+import ProfileScreen from "../ProfileScreen/ProfileScreen";
+import { useDispatch } from "react-redux";
+import { authSingOutUser } from "../../../redux/auth/authOperations";
+
 const MainTab = createBottomTabNavigator();
+
 const Home = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    // alert("This is a button!");
+    dispatch(authSingOutUser());
+  };
+
+  const alertOut = () => {
+    Alert.alert("Message", "Do you wont exit", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      { text: "OK", onPress: handleLogout},
+    ]);
+  };
   return (
     <MainTab.Navigator
       tabBarOptions={{ showLabel: false }}
@@ -19,8 +40,9 @@ const Home = ({ navigation }) => {
     >
       <MainTab.Screen
         name="Posts"
-              component={PostsScreen}
-               options={{
+        component={PostsScreen}
+        options={{
+          // headerShown: false,
           headerTitleAlign: "center",
           tabBarIcon: ({ focused, size, color }) => (
             <Feather name="grid" size={24} color={color} />
@@ -30,15 +52,15 @@ const Home = ({ navigation }) => {
               name="log-out"
               size={24}
               color="#BDBDBD"
-              onPress={() => alert("This button is for exit!")}
+              onPress={alertOut}
             />
           ),
         }}
       />
       <MainTab.Screen
         name="CreatePosts"
-              component={CreatePostsScreen}
-               options={{
+        component={CreatePostsScreen}
+        options={{
           tabBarIcon: ({ focused, size, color }) => (
             <Feather name="plus" size={24} color="white" />
           ),
@@ -55,8 +77,8 @@ const Home = ({ navigation }) => {
       />
       <MainTab.Screen
         name="Profile"
-              component={ProfileScreen}
-               options={{
+        component={ProfileScreen}
+        options={{
           headerTitleAlign: "center",
           //   headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
@@ -67,14 +89,15 @@ const Home = ({ navigation }) => {
               name="log-out"
               size={24}
               color="#BDBDBD"
-              onPress={() => alert("This is a button!")}
+              onPress={alertOut}
             />
           ),
         }}
       />
     </MainTab.Navigator>
   );
-}
+};
+
 export default Home;
 const styles = StyleSheet.create({
   tabBar: {

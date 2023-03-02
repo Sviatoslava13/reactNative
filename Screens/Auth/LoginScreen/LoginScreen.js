@@ -1,34 +1,41 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
-  ImageBackground,
-  KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
   Platform,
   Keyboard,
+  TouchableWithoutFeedback,
+  ImageBackground,
 } from "react-native";
+
+import { useDispatch } from "react-redux";
+
+import { authSingInUser } from "../../../redux/auth/authOperations";
+
 const initialState = {
-  name: "",
   email: "",
   password: "",
 };
-const RegistrationScreen = ({navigation}) => {
-  const [state, setState] = useState(initialState);
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
-  const handleSabmit = () => {
-    setIsShowKeyboard(false);
+const LoginScreen = ({ navigation }) => {
+  const [state, setState] = useState(initialState);
+  const [activeKayboard, setActiveKayboard] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const submitValue = () => {
+    setActiveKayboard(false);
     Keyboard.dismiss();
-    console.log(state);
+    dispatch(authSingInUser(state));
     setState(initialState);
   };
 
   const onActive = () => {
-    setIsShowKeyboard(false);
+    setActiveKayboard(false);
     Keyboard.dismiss();
   };
 
@@ -36,40 +43,29 @@ const RegistrationScreen = ({navigation}) => {
     <TouchableWithoutFeedback onPress={onActive}>
       <ImageBackground
         style={styles.image}
-        source={require("../assets/image/photo-bg.png")}
+       source={require("../../../assets/image/photo-bg.png")}
       >
-        <TouchableWithoutFeedback>
-          <View style={styles.containers}>
-            <TouchableOpacity
-              style={styles.userPhoto}
-              activeOpacity={0.8}
-            ></TouchableOpacity>
+        <TouchableWithoutFeedback onPress={onActive}>
+          <View style={styles.container}>
             <View
-              style={{ ...styles.form, marginBottom: isShowKeyboard ? 200 : 78}}
+              style={{
+                ...styles.form,
+                marginBottom: activeKayboard ? 230 : 32,
+              }}
             >
               <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : 'height'}
+                behavior={Platform.OS !== "ios" ? "padding" : "height"}
+                keyboardVerticalOffset={-250}
               >
                 <View style={styles.header}>
-                  <Text style={styles.headerTitle}>Регистрация</Text>
-                </View>
-                <View>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Логин"
-                    value={state.name}
-                    onFocus={() => setIsShowKeyboard(true)}
-                    onChangeText={(value) =>
-                      setState((prevState) => ({ ...prevState, name: value }))
-                    }
-                  />
+                  <Text style={styles.headerTitle}>Войти</Text>
                 </View>
                 <View>
                   <TextInput
                     style={styles.input}
                     placeholder="Адрес электронной почты"
+                    onFocus={() => setActiveKayboard(true)}
                     value={state.email}
-                    onFocus={() => setIsShowKeyboard(true)}
                     onChangeText={(value) =>
                       setState((prevState) => ({ ...prevState, email: value }))
                     }
@@ -80,8 +76,8 @@ const RegistrationScreen = ({navigation}) => {
                     style={styles.input}
                     placeholder="Пароль"
                     secureTextEntry={true}
+                    onFocus={() => setActiveKayboard(true)}
                     value={state.password}
-                    onFocus={() => setIsShowKeyboard(true)}
                     onChangeText={(value) =>
                       setState((prevState) => ({
                         ...prevState,
@@ -91,11 +87,19 @@ const RegistrationScreen = ({navigation}) => {
                   />
                 </View>
               </KeyboardAvoidingView>
-              <TouchableOpacity style={styles.button} onPress={handleSabmit}>
-                <Text style={styles.btnTitle}>Зарегистрироваться</Text>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.button}
+                onPress={submitValue}
+              >
+                <Text style={styles.btnTitle}>Войти</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                <Text style={styles.link}>Уже есть аккаунт? Войти</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Registration")}
+              >
+                <Text style={styles.link}>
+                  Нет аккаунта? Зарегистрироваться
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -104,37 +108,29 @@ const RegistrationScreen = ({navigation}) => {
     </TouchableWithoutFeedback>
   );
 };
-export default RegistrationScreen;
+
+export default LoginScreen;
+
 const styles = StyleSheet.create({
-  containers: {
-    position: "relative",
-    backgroundColor: "white",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-  },
   image: {
     flex: 1,
     resizeMode: "cover",
     justifyContent: "flex-end",
   },
+  container: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    // opacity: 0.8,
+  },
   form: {
     marginHorizontal: 16,
     justifyContent: "flex-end",
+    // marginBottom: 78,
   },
   header: {
     alignItems: "center",
-    marginTop: 92,
-  },
-  userPhoto: {
-    position: "absolute",
-    top: -60,
-    right: "50%",
-    transform: [{ translateX: 60 }],
-    maxWidth: 120,
-    minWidth: 120,
-    height: 120,
-    borderRadius: 30,
-    backgroundColor: "#F6F6F6",
+    marginTop: 32,
   },
   headerTitle: {
     fontSize: 33,
@@ -167,6 +163,6 @@ const styles = StyleSheet.create({
   link: {
     color: "#1B4371",
     textAlign: "center",
-   fontFamily: "Roboto-Regular-400",
+    fontFamily: "Roboto-Regular-400",
   },
 });
